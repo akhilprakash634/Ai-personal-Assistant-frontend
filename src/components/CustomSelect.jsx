@@ -1,7 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
-export default function CustomSelect({ label, value, options, onChange, icon: Icon, className = "" }) {
+export default function CustomSelect({ 
+  label, 
+  value, 
+  options, 
+  onChange, 
+  icon: Icon, 
+  className = "", 
+  variant = "default", // or "minimal"
+  placeholder = "Select..."
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -24,9 +33,11 @@ export default function CustomSelect({ label, value, options, onChange, icon: Ic
     ? selectedOption 
     : selectedOption?.label || value;
 
+  const isMinimal = variant === "minimal";
+
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
-      {label && (
+    <div className={`relative ${isMinimal ? 'inline-block' : 'w-full'} ${className}`} ref={containerRef}>
+      {label && !isMinimal && (
         <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center">
           {Icon && <Icon className="w-3 h-3 mr-1" />} {label}
         </label>
@@ -36,15 +47,15 @@ export default function CustomSelect({ label, value, options, onChange, icon: Ic
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          w-full px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200
-          bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800
-          hover:border-slate-200 dark:hover:border-slate-700
-          ${isOpen ? 'ring-4 ring-indigo-100 dark:ring-indigo-900/20 border-indigo-400 dark:border-indigo-500 bg-white dark:bg-slate-800' : ''}
-          text-sm font-medium text-slate-700 dark:text-slate-200
+          flex items-center justify-between transition-all duration-200
+          ${isMinimal 
+            ? 'px-0 py-0 bg-transparent border-none text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-800 dark:hover:text-slate-300' 
+            : `w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 ${isOpen ? 'ring-4 ring-indigo-100 dark:ring-indigo-900/20 border-indigo-400 dark:border-indigo-500 bg-white dark:bg-slate-800' : ''}`}
+          text-sm font-medium
         `}
       >
-        <span className="truncate">{displayValue}</span>
-        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="truncate mr-1">{displayValue || placeholder}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Dropdown Menu */}

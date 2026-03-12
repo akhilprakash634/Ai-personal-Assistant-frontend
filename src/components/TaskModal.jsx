@@ -79,7 +79,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave }) {
       <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-lg shadow-2xl premium-shadow transform transition-all border border-transparent dark:border-slate-800 relative">
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
           <h2 className="text-xl font-bold font-outfit text-slate-800 dark:text-white">
-            {task ? 'Edit Task' : 'Create New Task'}
+            {task ? 'Edit Reminder' : 'New Reminder'}
           </h2>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
             <X className="w-6 h-6 text-slate-400 dark:text-slate-500" />
@@ -89,7 +89,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Title */}
           <div>
-            <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Task Title</label>
+            <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">What should I remember?</label>
             <input 
               required
               type="text"
@@ -164,7 +164,7 @@ export default function TaskModal({ task, isOpen, onClose, onSave }) {
               type="submit"
               className="flex-1 px-6 py-3.5 bg-indigo-600 dark:bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 dark:hover:bg-indigo-700 transition font-bold shadow-lg shadow-indigo-100 dark:shadow-indigo-900/40"
             >
-              {task ? 'Update Task' : 'Create Task'}
+              {task ? 'Update Reminder' : 'Tell Assistant'}
             </button>
           </div>
         </form>

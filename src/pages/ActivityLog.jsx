@@ -42,9 +42,9 @@ export default function ActivityLog() {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight mb-2">
-            Activity Log
+            Assistant History
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">A complete history of your task management actions.</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">This is everything your assistant has helped you manage.</p>
         </div>
         
         <Link 
@@ -68,7 +68,7 @@ export default function ActivityLog() {
               <Activity className="w-10 h-10 text-slate-200 dark:text-slate-700" />
             </div>
             <h3 className="text-xl font-bold text-slate-800 dark:text-white font-outfit mb-2">No activities yet</h3>
-            <p className="text-slate-400 dark:text-slate-500 font-medium">Start managing your tasks to see your history here.</p>
+            <p className="text-slate-400 dark:text-slate-500 font-medium">Manage your reminders to see your history here.</p>
           </div>
         ) : (
           <div className="relative">

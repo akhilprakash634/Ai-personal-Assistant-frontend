@@ -13,8 +13,11 @@ import {
   Globe,
   Mail,
   Tag,
+  MessageCircle,
   Settings as SettingsIcon
 } from 'lucide-react';
+
+import CustomSelect from '../components/CustomSelect';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -27,6 +30,7 @@ export default function Settings() {
     slack_webhook: '',
     teams_webhook: '',
     whatsapp_number: '',
+    telegram_chat_id: '',
     timezone: 'UTC',
     email_notifications_enabled: true,
     default_task_category: 'General'
@@ -39,6 +43,7 @@ export default function Settings() {
         slack_webhook: user.slack_webhook || '',
         teams_webhook: user.teams_webhook || '',
         whatsapp_number: user.whatsapp_number || '',
+        telegram_chat_id: user.telegram_chat_id || '',
         timezone: user.timezone || 'UTC',
         email_notifications_enabled: user.email_notifications_enabled ?? true,
         default_task_category: user.default_task_category || 'General'
@@ -68,14 +73,15 @@ export default function Settings() {
     { id: 'slack', name: 'Slack', icon: Slack, color: 'bg-[#4A154B]' },
     { id: 'teams', name: 'MS Teams', icon: MessageSquare, color: 'bg-[#6264A7]' },
     { id: 'whatsapp', name: 'WhatsApp', icon: Phone, color: 'bg-[#25D366]' },
+    { id: 'telegram', name: 'Telegram', icon: MessageCircle, color: 'bg-[#0088cc]' },
     { id: 'sms', name: 'SMS', icon: Smartphone, color: 'bg-slate-700' },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-outfit">Settings</h1>
-        <p className="text-slate-500 dark:text-slate-400 font-medium">Configure where and how you want to be reminded.</p>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight font-outfit">Assistant Settings</h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Choose how your assistant should reach you.</p>
       </div>
 
       <div className="bg-white dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden premium-shadow transition-colors duration-300">
@@ -85,7 +91,7 @@ export default function Settings() {
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
               <Bell className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />
-              Primary Notification Platform
+              How should your assistant reach you?
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {platforms.map((p) => {
@@ -119,7 +125,7 @@ export default function Settings() {
 
           {/* Platform Specific Config */}
           <div className="space-y-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">Integration Configuration</h2>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">Assistant Connections</h2>
             
             <div className={`space-y-2 transition-all duration-300 ${formData.notification_platform === 'slack' ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
               <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
@@ -165,6 +171,21 @@ export default function Settings() {
                 disabled={formData.notification_platform !== 'whatsapp' && formData.notification_platform !== 'sms'}
               />
             </div>
+
+            <div className={`space-y-2 transition-all duration-300 ${formData.notification_platform === 'telegram' ? 'opacity-100' : 'opacity-40 grayscale pointer-events-none'}`}>
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Telegram Chat ID
+              </label>
+              <input
+                type="text"
+                value={formData.telegram_chat_id}
+                onChange={(e) => setFormData({ ...formData, telegram_chat_id: e.target.value })}
+                placeholder="e.g. 123456789"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 focus:border-indigo-400 transition dark:text-white"
+                disabled={formData.notification_platform !== 'telegram'}
+              />
+            </div>
           </div>
 
           <hr className="border-slate-100 dark:border-slate-800" />
@@ -176,41 +197,29 @@ export default function Settings() {
               Assistant Behavior
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                  <Globe className="w-4 h-4 mr-2" />
-                  Preferred Timezone
-                </label>
-                <select
-                  value={formData.timezone}
-                  onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 focus:border-indigo-400 transition dark:text-white font-bold"
-                >
-                  <option value="UTC">UTC (Default)</option>
-                  <option value="America/New_York">Eastern Time (US)</option>
-                  <option value="America/Los_Angeles">Pacific Time (US)</option>
-                  <option value="Europe/London">London (GMT/BST)</option>
-                  <option value="Asia/Kolkata">India (IST)</option>
-                  <option value="Asia/Tokyo">Tokyo (JST)</option>
-                </select>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <CustomSelect 
+                label="Preferred Timezone"
+                icon={Globe}
+                value={formData.timezone}
+                onChange={(val) => setFormData({ ...formData, timezone: val })}
+                options={[
+                  { value: "UTC", label: "UTC (Default)" },
+                  { value: "America/New_York", label: "Eastern Time (US)" },
+                  { value: "America/Los_Angeles", label: "Pacific Time (US)" },
+                  { value: "Europe/London", label: "London (GMT/BST)" },
+                  { value: "Asia/Kolkata", label: "India (IST)" },
+                  { value: "Asia/Tokyo", label: "Tokyo (JST)" }
+                ]}
+              />
 
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
-                  <Tag className="w-4 h-4 mr-2" />
-                  Default Task Category
-                </label>
-                <select
-                  value={formData.default_task_category}
-                  onChange={(e) => setFormData({ ...formData, default_task_category: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 focus:border-indigo-400 transition dark:text-white font-bold"
-                >
-                  {['General', 'Work', 'Personal', 'Health', 'Finance', 'Shopping', 'Renewal'].map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
+              <CustomSelect 
+                label="Default Reminder Category"
+                icon={Tag}
+                value={formData.default_task_category}
+                onChange={(val) => setFormData({ ...formData, default_task_category: val })}
+                options={['General', 'Work', 'Personal', 'Health', 'Finance', 'Shopping', 'Renewal']}
+              />
             </div>
 
             <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">

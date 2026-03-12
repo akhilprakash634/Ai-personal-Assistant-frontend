@@ -6,27 +6,35 @@ import { Link } from 'react-router-dom';
 
 export default function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activities, setActivities] = useState([]);
-  const [overdueCount, setOverdueCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
   const fetchNotifications = async () => {
     try {
-      const [summaryRes, activityRes] = await Promise.all([
-        api.get('/dashboard/summary'),
-        api.get('/dashboard/activity?limit=10')
-      ]);
-      
-      setOverdueCount(summaryRes.data.counts.overdue);
-      setActivities(activityRes.data);
-      
-      // Calculate unread based on localStorage lastViewed
-      const lastViewed = localStorage.getItem('notificationsLastViewed') || 0;
-      const newActivities = activityRes.data.filter(a => new Date(a.timestamp).getTime() > lastViewed);
-      setUnreadCount(newActivities.length + (summaryRes.data.counts.overdue > 0 ? 1 : 0));
+      const res = await api.get('/notifications/');
+      setNotifications(res.data);
+      setUnreadCount(res.data.filter(n => !n.is_read).length);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
+    }
+  };
+
+  const markAsRead = async (id) => {
+    try {
+      await api.post(`/notifications/${id}/read`);
+      fetchNotifications();
+    } catch (err) {
+      console.error("Failed to mark as read", err);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await api.post('/notifications/read-all');
+      fetchNotifications();
+    } catch (err) {
+      console.error("Failed to mark all as read", err);
     }
   };
 
@@ -95,43 +103,34 @@ export default function NotificationCenter() {
           </div>
 
           <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-hide">
-            {/* Overdue Alert */}
-            {overdueCount > 0 && (
-              <div className="m-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-2xl flex items-start space-x-3 mb-4">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-red-900 dark:text-red-300">Overdue Tasks</p>
-                  <p className="text-xs text-red-700 dark:text-red-400/80">You have {overdueCount} items waiting for attention.</p>
-                  <Link 
-                    to="/?filter=overdue" 
-                    onClick={() => setIsOpen(false)}
-                    className="inline-flex items-center text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 mt-2 hover:underline"
-                  >
-                    View All <ExternalLink className="w-3 h-3 ml-1" />
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {activities.length === 0 ? (
+            {notifications.length === 0 ? (
               <div className="py-10 text-center">
                 <p className="text-sm font-bold text-slate-400">All caught up!</p>
               </div>
             ) : (
               <div className="space-y-1">
-                {activities.map((log) => {
-                  const { icon: Icon, color, bg } = getLogDetails(log);
+                {notifications.map((notif) => {
                   return (
-                    <div key={log.id} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition-colors flex items-start space-x-3 group">
-                      <div className={`w-10 h-10 rounded-xl ${bg} ${color} flex items-center justify-center shrink-0`}>
-                        <Icon className="w-5 h-5" />
+                    <div 
+                      key={notif.id} 
+                      onClick={() => !notif.is_read && markAsRead(notif.id)}
+                      className={`p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition-colors flex items-start space-x-3 group cursor-pointer ${!notif.is_read ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : ''}`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 flex items-center justify-center shrink-0`}>
+                        <Bell className="w-5 h-5" />
                       </div>
                       <div className="flex-1 overflow-hidden">
-                        <p className="text-xs font-bold text-slate-800 dark:text-white truncate group-hover:whitespace-normal">
-                          {log.description}
+                        <div className="flex justify-between items-start">
+                          <p className={`text-xs font-bold truncate group-hover:whitespace-normal ${!notif.is_read ? 'text-indigo-900 dark:text-indigo-200' : 'text-slate-800 dark:text-white'}`}>
+                            {notif.title}
+                          </p>
+                          {!notif.is_read && <div className="w-2 h-2 bg-indigo-500 rounded-full mt-1 shrink-0" />}
+                        </div>
+                        <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">
+                          {notif.message}
                         </p>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                          {format(parseISO(log.timestamp), 'h:mm a')}
+                          {format(parseISO(notif.created_at), 'MMM d, h:mm a')}
                         </p>
                       </div>
                     </div>
@@ -141,13 +140,19 @@ export default function NotificationCenter() {
             )}
           </div>
 
-          <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 text-center">
+          <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <button 
+              onClick={markAllAsRead}
+              className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition-colors"
+            >
+              Mark all read
+            </button>
             <Link 
               to="/activity" 
               onClick={() => setIsOpen(false)}
               className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest hover:underline"
             >
-              See Full Activity History
+              See Full History
             </Link>
           </div>
         </div>

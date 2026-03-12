@@ -8,7 +8,9 @@ import {
   LogOut, 
   Bot,
   Menu,
-  X
+  X,
+  IndianRupee,
+  CreditCard
 } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
@@ -22,10 +24,12 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'My Tasks', path: '/tasks', icon: CheckSquare },
-    { name: 'Activity Log', path: '/activity', icon: Activity },
-    { name: 'Settings', path: '/settings', icon: Settings },
+    { name: 'Overview', path: '/', icon: LayoutDashboard },
+    { name: 'Your Reminders', path: '/tasks', icon: CheckSquare },
+    { name: 'Expenses', path: '/expenses', icon: IndianRupee },
+    { name: 'Subscriptions', path: '/subscriptions', icon: CreditCard },
+    { name: 'Assistant History', path: '/activity', icon: Activity },
+    { name: 'Assistant Settings', path: '/settings', icon: Settings },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -54,7 +58,6 @@ export default function Sidebar() {
         w-64 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
           {/* Logo & Actions Header */}
           <div className="p-5 md:p-6">
             <div className="flex items-center justify-between">

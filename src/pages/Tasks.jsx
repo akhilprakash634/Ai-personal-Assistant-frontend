@@ -12,6 +12,8 @@ import {
   Clock
 } from 'lucide-react';
 
+import CustomSelect from '../components/CustomSelect';
+
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -117,18 +119,18 @@ export default function Tasks() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight mb-2 break-words text-balance">
-            My Tasks
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm sm:text-base">Manage and organize all your reminders.</p>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight mb-2">
+          Your Reminders
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Manage and organize everything I'm tracking for you.</p>
         </div>
         <button
           onClick={handleAddNew}
           className="flex items-center justify-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-lg shadow-indigo-100 dark:shadow-indigo-900/30 transition-all font-bold"
         >
           <Plus className="w-5 h-5 mr-2" />
-          Add New Task
-        </button>
+            New Reminder
+          </button>
       </div>
 
       {/* Controls */}
@@ -190,32 +192,34 @@ export default function Tasks() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-2 scrollbar-hide border-t border-slate-50 dark:border-slate-800 pt-4">
-            <div className="flex items-center space-x-6 mr-4">
+          <div className="flex flex-wrap items-center gap-6 overflow-x-auto pb-2 scrollbar-hide border-t border-slate-50 dark:border-slate-800 pt-4">
+            <div className="flex items-center space-x-6 h-10">
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Priority:</span>
-                <select 
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest shrink-0">Priority:</span>
+                <CustomSelect 
+                  variant="minimal"
                   value={priorityFilter} 
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="bg-transparent text-[10px] font-black uppercase tracking-widest text-slate-500 border-none focus:ring-0 cursor-pointer"
-                >
-                  <option value="All">All Levels</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </select>
+                  onChange={setPriorityFilter}
+                  options={[
+                    { value: 'All', label: 'All Levels' },
+                    { value: 'High', label: 'High' },
+                    { value: 'Medium', label: 'Medium' },
+                    { value: 'Low', label: 'Low' }
+                  ]}
+                />
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Sort By:</span>
-                <select 
+                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest shrink-0">Sort By:</span>
+                <CustomSelect 
+                  variant="minimal"
                   value={sortBy} 
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent text-[10px] font-black uppercase tracking-widest text-slate-500 border-none focus:ring-0 cursor-pointer"
-                >
-                  <option value="dueDate">Due Date</option>
-                  <option value="priority">Priority</option>
-                  <option value="created">Recently Added</option>
-                </select>
+                  onChange={setSortBy}
+                  options={[
+                    { value: 'dueDate', label: 'Due Date' },
+                    { value: 'priority', label: 'Priority' },
+                    { value: 'created', label: 'Recently Added' }
+                  ]}
+                />
               </div>
             </div>
           </div>

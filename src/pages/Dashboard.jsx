@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
-import { Plus, LayoutDashboard, Calendar, CalendarClock, AlertCircle, ChevronRight, Activity, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Plus, LayoutDashboard, Calendar, CalendarClock, AlertCircle, Sparkles, ChevronRight, Activity, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import TaskCard from '../components/TaskCard';
 import TaskModal from '../components/TaskModal';
 import { Link, useLocation } from 'react-router-dom';
@@ -78,7 +78,7 @@ export default function Dashboard() {
   };
 
   const deleteTask = async (taskId) => {
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
+    if (!window.confirm("Are you sure you want to delete this reminder?")) return;
     try {
       await api.delete(`/tasks/${taskId}`);
       fetchDashboard();
@@ -107,7 +107,7 @@ export default function Dashboard() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="w-16 h-16 border-4 border-indigo-100 dark:border-indigo-900/30 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="mt-4 text-slate-500 dark:text-slate-400 font-bold font-outfit uppercase tracking-widest text-xs">Loading Workspace...</p>
+        <p className="mt-4 text-slate-500 dark:text-slate-400 font-bold font-outfit uppercase tracking-widest text-xs">Getting everything ready...</p>
       </div>
     );
   }
@@ -115,65 +115,71 @@ export default function Dashboard() {
   const { counts } = summary;
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Top Section: Header & Quick Add */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="text-2xl sm:text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight mb-2 break-words">
-            Hey, {user.email.split('@')[0]} 👋
+          <h1 className="text-4xl font-black text-slate-900 dark:text-white font-outfit tracking-tight mb-2">
+            {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening'} {user?.full_name?.split(' ')[0] || ''} 👋
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium max-w-md">
-            {counts.overdue > 0 ? (
-              <span className="text-red-500 font-bold">Attention required! You have {counts.overdue} overdue tasks.</span>
-            ) : counts.today > 0 ? (
-              <>You've got <span className="text-indigo-600 dark:text-indigo-400 font-bold">{counts.today} tasks</span> due today.</>
-            ) : (
-              "Your schedule looks clear for today. Ready for something new?"
-            )}
-          </p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Here’s what I’m watching for you today.</p>
         </div>
+        <div className="flex space-x-3 w-full md:w-auto">
+          <button 
+            onClick={handleCreate}
+            className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-[2rem] font-bold transition-all hover:scale-105 active:scale-95 premium-shadow flex items-center justify-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>New Reminder</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Assistant Briefing Card (Feature 3) */}
+      <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[3rem] p-8 text-white relative overflow-hidden premium-shadow">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 rounded-full -ml-32 -mb-32 blur-3xl" />
         
         <button 
           onClick={handleCreate}
           className="flex items-center justify-center space-x-2 px-6 py-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 transition-all font-bold premium-shadow group"
         >
           <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-          <span>Quick Task</span>
+          <span>Quick Reminder</span>
         </button>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5 mb-12">
         <StatCard 
-          label="Overdue" 
+          label="Needs Attention" 
           count={counts.overdue} 
           icon={AlertCircle} 
           color="red" 
-          trend="Urgent attention" 
+          trend="Requires action" 
         />
         <StatCard 
-          label="Due Today" 
+          label="Today" 
           count={counts.today} 
           icon={Calendar} 
           color="indigo" 
-          trend="Scheduled today"
+          trend="For today"
         />
         <StatCard 
-          label="High Priority" 
+          label="Important" 
           count={counts.high_priority} 
           icon={AlertTriangle} 
           color="amber" 
-          trend="Critical tasks"
+          trend="High priority"
         />
         <StatCard 
-          label="Upcoming" 
+          label="Coming Up" 
           count={counts.upcoming} 
           icon={CalendarClock} 
           color="emerald" 
           trend="Next 7 days"
         />
         <StatCard 
-          label="Completed" 
+          label="Recently Done" 
           count={counts.recently_completed} 
           icon={CheckCircle2} 
           color="blue" 
@@ -203,7 +209,7 @@ export default function Dashboard() {
           </div>
           
           <Link to="/activity" className="group flex items-center text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors uppercase tracking-widest pl-2">
-            View Activity <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            Assistant History <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -213,7 +219,7 @@ export default function Dashboard() {
           {filterTasks(summary.overdue).length > 0 && (
             <div ref={sectionRefs.overdue}>
               <TaskSection 
-                title="Overdue" 
+                title="Needs Attention" 
                 icon={AlertCircle} 
                 color="text-red-500" 
                 tasks={filterTasks(summary.overdue)}
@@ -254,7 +260,7 @@ export default function Dashboard() {
           {/* Inbox / No Date */}
           {filterTasks(summary.no_date).length > 0 && (
             <TaskSection 
-              title="Inbox" 
+              title="Things to Remember" 
               icon={LayoutDashboard} 
               color="text-slate-400" 
               tasks={filterTasks(summary.no_date)}
@@ -266,7 +272,7 @@ export default function Dashboard() {
           {/* Recently Completed */}
           {filterTasks(summary.recently_completed).length > 0 && (
             <TaskSection 
-              title="Recently Completed" 
+              title="Recently Done" 
               icon={CheckCircle2} 
               color="text-blue-500" 
               tasks={filterTasks(summary.recently_completed).slice(0, 5)}
@@ -335,7 +341,9 @@ function TaskSection({ title, icon: Icon, color, tasks, type, actions }) {
       <div className="space-y-4">
         {tasks.length === 0 ? (
           <div className="bg-slate-50/50 dark:bg-slate-800/20 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl p-12 text-center">
-            <p className="text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest text-xs">Clear for now</p>
+            <p className="text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest text-xs">
+              Your assistant isn’t tracking anything yet. Tell me what you’d like me to remember.
+            </p>
           </div>
         ) : tasks.map(task => (
           <TaskCard 

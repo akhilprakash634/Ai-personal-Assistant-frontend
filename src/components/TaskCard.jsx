@@ -84,7 +84,7 @@ export default function TaskCard({ task, type, onComplete, onSnooze, onDuplicate
         <button 
           onClick={onDuplicate}
           className="p-3 text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl transition-colors"
-          title="Duplicate Task"
+          title="Duplicate Reminder"
         >
           <Copy className="w-5 h-5" />
         </button>
@@ -98,7 +98,7 @@ export default function TaskCard({ task, type, onComplete, onSnooze, onDuplicate
         <button 
           onClick={onDelete}
           className="p-3 text-red-400 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-300 rounded-xl transition-colors"
-          title="Delete Task"
+          title="Delete Reminder"
         >
           <Trash2 className="w-5 h-5" />
         </button>

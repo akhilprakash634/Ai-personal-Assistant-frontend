@@ -72,7 +72,7 @@ export default function Landing() {
             <FeatureCard 
               icon={Zap} 
               title="Instant Alerts" 
-              desc="Timely notifications and smart snooze features help you manage overdue tasks gracefully."
+              desc="Timely notifications and smart snooze features help you manage reminders gracefully."
             />
           </div>
         </div>

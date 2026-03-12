@@ -109,7 +109,7 @@ export default function ChatPanel({ onRefresh }) {
             type="text" 
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Ask me anything..."
+            placeholder="Tell me what you’d like me to remember…"
             className="w-full pl-4 pr-12 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/40 focus:border-indigo-400 transition text-sm font-medium dark:text-white"
           />
           <button 
